@@ -31,7 +31,8 @@ void LongNumber::NormalizeDigits(uint16_t IntPart, uint16_t FracPart)
 	}
 }
 
-LongNumber::LongNumber(uint16_t pref, uint16_t post) : IntAccuracy(pref), FracAccuracy(post)
+LongNumber::LongNumber() : IntAccuracy(32),
+						   FracAccuracy(64)
 {
 	const std::string str_num = "0";
 	std::unique_ptr<LongNumParts> my_num_parts = DecToBinary(str_num, (int)IntAccuracy, (int)FracAccuracy);
@@ -48,9 +49,10 @@ LongNumber::LongNumber(uint16_t pref, uint16_t post) : IntAccuracy(pref), FracAc
 	MakeDeque(my_num_parts.get());
 }
 
-LongNumber::LongNumber(long double input)
+LongNumber::LongNumber(uint16_t IntAcc, uint16_t FracAcc) : IntAccuracy(IntAcc),
+															FracAccuracy(FracAcc)
 {
-	const std::string str_num = MakeString(input);
+	const std::string str_num = "0";
 	std::unique_ptr<LongNumParts> my_num_parts = DecToBinary(str_num, (int)IntAccuracy, (int)FracAccuracy);
 
 	uint16_t act_int_accuracy = (uint16_t)((my_num_parts->IntPart).length() - (my_num_parts->IntPart).find_first_not_of('0'));
@@ -65,7 +67,8 @@ LongNumber::LongNumber(long double input)
 	MakeDeque(my_num_parts.get());
 }
 
-LongNumber::LongNumber(const char *input)
+LongNumber::LongNumber(const char *input = "0", uint16_t IntAcc = 32, uint16_t FracAcc = 64) : IntAccuracy(IntAcc),
+																							   FracAccuracy(FracAcc)
 {
 	const std::string str_num = std::string(input);
 

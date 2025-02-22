@@ -8,8 +8,8 @@
 class LongNumber
 {
 private:
-	uint16_t IntAccuracy = 32;
-	uint16_t FracAccuracy = 64;
+	uint16_t IntAccuracy;
+	uint16_t FracAccuracy;
 	uint16_t IntAccuracy_increased;
 	uint16_t FracAccuracy_increased;
 	char sign = 1;
@@ -20,9 +20,9 @@ private:
 	void NormalizeDigits(uint16_t IntPart, uint16_t FracPart);
 
 public:
-	LongNumber(uint16_t pref, uint16_t post);
-	LongNumber(long double input);
-	LongNumber(const char *input);
+	LongNumber();
+	LongNumber(uint16_t IntAcc, uint16_t FracAcc);
+	LongNumber(const char *input, uint16_t IntAcc, uint16_t FracAcc);
 	LongNumber(const LongNumber &other);
 	LongNumber(LongNumber &&other);
 
@@ -31,7 +31,7 @@ public:
 	LongNumber &operator=(const LongNumber &other);
 	LongNumber &operator=(LongNumber &&other);
 	LongNumber operator-() const;
-	bool operator==(const LongNumber& other) const;
+	bool operator==(const LongNumber &other) const;
 };
 
 LongNumber operator""_longnum(const char *num);
