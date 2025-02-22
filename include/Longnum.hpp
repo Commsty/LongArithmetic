@@ -17,6 +17,7 @@ private:
 	std::deque<unsigned long long> *num;
 
 	void MakeDeque(void *parts);
+	void NormalizeDigits(uint16_t IntPart, uint16_t FracPart);
 
 public:
 	LongNumber(uint16_t pref, uint16_t post);
@@ -30,6 +31,7 @@ public:
 	LongNumber &operator=(const LongNumber &other);
 	LongNumber &operator=(LongNumber &&other);
 	LongNumber operator-() const;
+	bool operator==(const LongNumber& other) const;
 };
 
 LongNumber operator""_longnum(const char *num);

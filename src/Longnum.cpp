@@ -16,6 +16,21 @@ void LongNumber::MakeDeque(void *ptr)
 	FracAccuracy_increased = (uint16_t)((parts->FracPart).length() / 32ull);
 }
 
+void LongNumber::NormalizeDigits(uint16_t IntPart, uint16_t FracPart)
+{
+	while (FracAccuracy_increased != FracPart)
+	{
+		num->push_back(0ull);
+		FracAccuracy_increased++;
+	}
+
+	while (IntAccuracy_increased != IntPart)
+	{
+		num->push_front(0ull);
+		IntAccuracy_increased++;
+	}
+}
+
 LongNumber::LongNumber(uint16_t pref, uint16_t post) : IntAccuracy(pref), FracAccuracy(post)
 {
 	const std::string str_num = "0";
@@ -23,7 +38,7 @@ LongNumber::LongNumber(uint16_t pref, uint16_t post) : IntAccuracy(pref), FracAc
 
 	uint16_t act_int_accuracy = (uint16_t)((my_num_parts->IntPart).length() - (my_num_parts->IntPart).find_first_not_of('0'));
 
-	if (IntAccuracy < act_int_accuracy && act_int_accuracy < (my_num_parts->IntPart).length())
+	if (IntAccuracy < act_int_accuracy && (my_num_parts->IntPart).find_first_not_of('0') != (my_num_parts->IntPart).npos)
 	{
 		IntAccuracy = act_int_accuracy;
 		std::cout << "Warning: IntAccuracy has been increased up to " + std::to_string(act_int_accuracy) + " binary digits."
@@ -40,7 +55,7 @@ LongNumber::LongNumber(long double input)
 
 	uint16_t act_int_accuracy = (uint16_t)((my_num_parts->IntPart).length() - (my_num_parts->IntPart).find_first_not_of('0'));
 
-	if (IntAccuracy < act_int_accuracy && act_int_accuracy < (my_num_parts->IntPart).length())
+	if (IntAccuracy < act_int_accuracy && (my_num_parts->IntPart).find_first_not_of('0') != (my_num_parts->IntPart).npos)
 	{
 		IntAccuracy = act_int_accuracy;
 		std::cout << "Warning: IntAccuracy has been increased up to " + std::to_string(act_int_accuracy) + " binary digits."
@@ -58,7 +73,7 @@ LongNumber::LongNumber(const char *input)
 
 	uint16_t act_int_accuracy = (uint16_t)((my_num_parts->IntPart).length() - (my_num_parts->IntPart).find_first_not_of('0'));
 
-	if (IntAccuracy < act_int_accuracy && act_int_accuracy < (my_num_parts->IntPart).length())
+	if (IntAccuracy < act_int_accuracy && (my_num_parts->IntPart).find_first_not_of('0') != (my_num_parts->IntPart).npos)
 	{
 		IntAccuracy = act_int_accuracy;
 		std::cout << "Warning: IntAccuracy has been increased up to " + std::to_string(act_int_accuracy) + " binary digits."
@@ -136,6 +151,37 @@ LongNumber LongNumber::operator-() const
 	LongNumber res(*this);
 	res.sign *= -1;
 	return res;
+}
+
+bool LongNumber::operator==(const LongNumber &other) const
+{
+	LongNumber temp1 = *this;
+	LongNumber temp2 = other;
+
+	uint16_t MaxFrac = std::max(temp1.FracAccuracy_increased, temp2.FracAccuracy_increased);
+	uint16_t MaxInt = std::max(temp1.IntAccuracy_increased, temp2.IntAccuracy_increased);
+
+	temp1.NormalizeDigits(MaxInt, MaxFrac);
+	temp2.NormalizeDigits(MaxInt, MaxFrac);
+
+	bool IsZero1{true}, IsZero2{true};
+	for (auto it = temp1.num->begin(); it != temp1.num->end(); it++)
+		if (*it != 0ull)
+		{
+			IsZero1 = false;
+			break;
+		}
+	for (auto it = temp2.num->begin(); it != temp2.num->end(); it++)
+		if (*it != 0ull)
+		{
+			IsZero2 = false;
+			break;
+		}
+
+	if (IsZero1 && IsZero2)
+		return true;
+
+	return *temp1.num == *temp2.num && temp1.sign == temp2.sign;
 }
 
 LongNumber operator""_longnum(const char *num)
