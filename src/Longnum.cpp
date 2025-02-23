@@ -218,6 +218,11 @@ bool LongNumber::operator<(const LongNumber &other) const
 	return Absolute;
 }
 
+bool LongNumber::operator>(const LongNumber &other) const
+{
+	return *this != other && !(*this < other);
+}
+
 LongNumber operator""_longnum(const char *num)
 {
 	return LongNumber(num);

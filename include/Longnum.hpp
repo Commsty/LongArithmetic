@@ -34,6 +34,7 @@ public:
 	bool operator==(const LongNumber &other) const;
 	bool operator!=(const LongNumber &other) const;
 	bool operator<(const LongNumber &other) const;
+	bool operator>(const LongNumber &other) const;
 };
 
 LongNumber operator""_longnum(const char *num);
