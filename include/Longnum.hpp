@@ -38,6 +38,7 @@ public:
 	bool operator>(const LongNumber &other) const;
 
 	LongNumber operator+(const LongNumber& other) const;
+	LongNumber operator-(const LongNumber& other) const;
 };
 
 LongNumber operator""_longnum(const char *num);

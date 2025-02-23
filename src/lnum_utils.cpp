@@ -122,14 +122,39 @@ void SummarizeDeques(std::deque<unsigned long long> &res,
 
 		if ((res[i] & mask) != 0 && i != 0ull)
 			res[i - 1] += 1;
-			
-		if ((res[i] & mask) != 0 && i == 0ull){
+
+		if ((res[i] & mask) != 0 && i == 0ull)
+		{
 			res[i] = res[i] & 0xFFFFFFFFull;
 			res.push_front(1ull);
 			break;
 		}
-		
+
 		res[i] = res[i] & 0xFFFFFFFFull;
+	}
+}
+
+void SubstractDeques(std::deque<unsigned long long> &res,
+					 std::deque<unsigned long long> &s1, const std::deque<unsigned long long> &s2)
+{
+	long long i = s1.size() - 1;
+
+	while (i >= 0)
+	{
+		long long diff = (long long)(s1[i] - s2[i]);
+		if (diff < 0ll)
+		{
+			long long j = i - 1;
+			while (j >= 0 && s1[j] == 0)
+				j--;
+			s1[j++]--;
+			while (j != i)
+				s1[j++] += 0xFFFFFFFF;
+			s1[j] += 0xFFFFFFFF+1ull;
+			diff = s1[i] - s2[i];
+		}
+		res[i] = diff;
+		i--;
 	}
 }
 

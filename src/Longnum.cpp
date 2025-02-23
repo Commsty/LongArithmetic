@@ -47,7 +47,7 @@ void LongNumber::NormalizeAccuracy()
 		if (new_acc > IntAccuracy)
 		{
 			IntAccuracy = (uint16_t)new_acc;
-			std::cout << "Warning[summarize]: IntAccuracy has been increased up to " + std::to_string(new_acc) + " binary digits."
+			std::cout << "Warning: IntAccuracy has been increased up to " + std::to_string(new_acc) + " binary digits."
 					  << std::endl;
 		}
 	}
@@ -246,6 +246,11 @@ bool LongNumber::operator>(const LongNumber &other) const
 
 LongNumber LongNumber::operator+(const LongNumber &other) const
 {
+	if (sign == 1 && other.sign == -1)
+		return *this - (-other);
+	if (sign == -1 && other.sign == 1)
+		return other - (-*this);
+
 	uint16_t ResIntAcc = std::max(IntAccuracy, other.IntAccuracy);
 	uint16_t ResFracAcc = std::max(FracAccuracy, other.FracAccuracy);
 	uint16_t ResIntAcc_32 = std::max(IntAccuracy_increased, other.IntAccuracy_increased);
@@ -264,11 +269,69 @@ LongNumber LongNumber::operator+(const LongNumber &other) const
 		Res.NormalizeAccuracy();
 		return Res;
 	}
-	if (sign == -1 && other.sign == -1){
-		Res.sign=-1;
+	if (sign == -1 && other.sign == -1)
+	{
+		Res.sign = -1;
 		SummarizeDeques(*Res.num, *temp1.num, *temp2.num);
 		Res.NormalizeAccuracy();
 		return Res;
+	}
+	return LongNumber(1, 1);
+}
+
+LongNumber LongNumber::operator-(const LongNumber &other) const
+{
+	if (sign == 1 && other.sign == -1)
+		return *this + (-other);
+	if (sign == -1 && other.sign == 1)
+		return *this + (-other);
+
+	uint16_t ResIntAcc = std::max(IntAccuracy, other.IntAccuracy);
+	uint16_t ResFracAcc = std::max(FracAccuracy, other.FracAccuracy);
+	uint16_t ResIntAcc_32 = std::max(IntAccuracy_increased, other.IntAccuracy_increased);
+	uint16_t ResFracAcc_32 = std::max(FracAccuracy_increased, other.FracAccuracy_increased);
+
+	LongNumber Res(ResIntAcc, ResFracAcc);
+
+	LongNumber temp1 = *this;
+	LongNumber temp2 = other;
+	temp1.NormalizeDigits(ResIntAcc_32, ResFracAcc_32);
+	temp2.NormalizeDigits(ResIntAcc_32, ResFracAcc_32);
+
+	if (other == *this)
+		return Res;
+
+	if (sign == 1 && other.sign == 1)
+	{
+		if (*this > other)
+		{
+			SubstractDeques(*Res.num, *temp1.num, *temp2.num);
+			Res.NormalizeAccuracy();
+			return Res;
+		}
+		else
+		{
+			SubstractDeques(*Res.num, *temp2.num, *temp1.num);
+			Res.NormalizeAccuracy();
+			Res.sign = -1;
+			return Res;
+		}
+	}
+	if (sign == -1 && other.sign == -1)
+	{
+		if (*this > other)
+		{
+			SubstractDeques(*Res.num, *temp2.num, *temp1.num);
+			Res.NormalizeAccuracy();
+			return Res;
+		}
+		else
+		{
+			SubstractDeques(*Res.num, *temp1.num, *temp2.num);
+			Res.NormalizeAccuracy();
+			Res.sign = -1;
+			return Res;
+		}
 	}
 	return LongNumber(1, 1);
 }
