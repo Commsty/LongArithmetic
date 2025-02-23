@@ -70,7 +70,12 @@ LongNumber::LongNumber(uint16_t IntAcc, uint16_t FracAcc) : IntAccuracy(IntAcc),
 LongNumber::LongNumber(const char *input = "0", uint16_t IntAcc = 32, uint16_t FracAcc = 64) : IntAccuracy(IntAcc),
 																							   FracAccuracy(FracAcc)
 {
-	const std::string str_num = std::string(input);
+	std::string str_num = std::string(input);
+	if (input[0] == '-')
+	{
+		str_num.erase(0, 1);
+		sign = -1;
+	}
 
 	std::unique_ptr<LongNumParts> my_num_parts = DecToBinary(str_num, (int)IntAccuracy, (int)FracAccuracy);
 
@@ -176,6 +181,41 @@ bool LongNumber::operator==(const LongNumber &other) const
 bool LongNumber::operator!=(const LongNumber &other) const
 {
 	return !this->operator==(other);
+}
+
+bool LongNumber::operator<(const LongNumber &other) const
+{
+	LongNumber temp1 = *this;
+	LongNumber temp2 = other;
+
+	uint16_t MaxFrac = std::max(temp1.FracAccuracy_increased, temp2.FracAccuracy_increased);
+	uint16_t MaxInt = std::max(temp1.IntAccuracy_increased, temp2.IntAccuracy_increased);
+
+	temp1.NormalizeDigits(MaxInt, MaxFrac);
+	temp2.NormalizeDigits(MaxInt, MaxFrac);
+
+	if (temp1 == temp2)
+		return false;
+	if (temp1.sign == -1 && temp2.sign == 1)
+		return true;
+	if (temp1.sign == 1 && temp2.sign == -1)
+		return false;
+
+	bool Absolute{false};
+	for (size_t i = 0; i < temp1.num->size(); i++)
+	{
+		if (temp1.num[i] < temp2.num[i])
+		{
+			Absolute = true;
+			break;
+		}
+		if (temp1.num[i] > temp2.num[i])
+			break;
+	}
+
+	if (temp1.sign == -1 && temp2.sign == -1)
+		return !Absolute;
+	return Absolute;
 }
 
 LongNumber operator""_longnum(const char *num)
