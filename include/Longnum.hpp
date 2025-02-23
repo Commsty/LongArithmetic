@@ -18,13 +18,14 @@ private:
 
 	void MakeDeque(void *parts);
 	void NormalizeDigits(uint16_t IntPart, uint16_t FracPart);
+	void NormalizeAccuracy();
 
 public:
 	LongNumber();
 	LongNumber(uint16_t IntAcc, uint16_t FracAcc);
 	LongNumber(const char *input, uint16_t IntAcc, uint16_t FracAcc);
 	LongNumber(const LongNumber &other);
-	LongNumber(LongNumber &&other);
+	LongNumber(LongNumber &&other) noexcept;
 
 	~LongNumber();
 
@@ -35,6 +36,8 @@ public:
 	bool operator!=(const LongNumber &other) const;
 	bool operator<(const LongNumber &other) const;
 	bool operator>(const LongNumber &other) const;
+
+	LongNumber operator+(const LongNumber& other) const;
 };
 
 LongNumber operator""_longnum(const char *num);

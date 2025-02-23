@@ -22,6 +22,7 @@ run: build
 	$(BUILD_DIR)/$(TARGET).exe
 
 
+debug_build: clean
 debug_build: CXXFLAGS+= -g
 debug_build: $(BUILD_DIR)/$(TARGET)
 

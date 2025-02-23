@@ -14,6 +14,7 @@ void LongNumber::MakeDeque(void *ptr)
 	num = PushToDeque(BinaryString);
 	IntAccuracy_increased = (uint16_t)((parts->IntPart).length() / 32ull);
 	FracAccuracy_increased = (uint16_t)((parts->FracPart).length() / 32ull);
+	delete parts;
 }
 
 void LongNumber::NormalizeDigits(uint16_t IntPart, uint16_t FracPart)
@@ -31,40 +32,61 @@ void LongNumber::NormalizeDigits(uint16_t IntPart, uint16_t FracPart)
 	}
 }
 
+void LongNumber::NormalizeAccuracy()
+{
+	if ((uint16_t)num->size() == IntAccuracy_increased + FracAccuracy_increased + 1)
+		IntAccuracy_increased++;
+
+	size_t index = 0;
+	while (index < IntAccuracy_increased && (*num)[index] == 0)
+		index++;
+	if (index != IntAccuracy_increased)
+	{
+		unsigned int new_acc = 64u - (uint16_t)__builtin_clzll((*num)[index]);
+		new_acc += 32u * (uint16_t)(IntAccuracy_increased - (uint16_t)index - 1u);
+		if (new_acc > IntAccuracy)
+		{
+			IntAccuracy = (uint16_t)new_acc;
+			std::cout << "Warning[summarize]: IntAccuracy has been increased up to " + std::to_string(new_acc) + " binary digits."
+					  << std::endl;
+		}
+	}
+}
+
 LongNumber::LongNumber() : IntAccuracy(32),
 						   FracAccuracy(64)
 {
 	const std::string str_num = "0";
-	std::unique_ptr<LongNumParts> my_num_parts = DecToBinary(str_num, (int)IntAccuracy, (int)FracAccuracy);
+	LongNumParts *my_num_parts = DecToBinary(str_num, (int)IntAccuracy, (int)FracAccuracy);
 
 	uint16_t act_int_accuracy = (uint16_t)((my_num_parts->IntPart).length() - (my_num_parts->IntPart).find_first_not_of('0'));
 
 	if (IntAccuracy < act_int_accuracy && (my_num_parts->IntPart).find_first_not_of('0') != (my_num_parts->IntPart).npos)
 	{
 		IntAccuracy = act_int_accuracy;
-		std::cout << "Warning: IntAccuracy has been increased up to " + std::to_string(act_int_accuracy) + " binary digits."
+		std::cout << "Warning[constructor]: IntAccuracy has been increased up to " + std::to_string(act_int_accuracy) + " binary digits."
 				  << std::endl;
 	}
 
-	MakeDeque(my_num_parts.get());
+	MakeDeque(my_num_parts);
 }
 
 LongNumber::LongNumber(uint16_t IntAcc, uint16_t FracAcc) : IntAccuracy(IntAcc),
 															FracAccuracy(FracAcc)
 {
 	const std::string str_num = "0";
-	std::unique_ptr<LongNumParts> my_num_parts = DecToBinary(str_num, (int)IntAccuracy, (int)FracAccuracy);
+	LongNumParts *my_num_parts = DecToBinary(str_num, (int)IntAccuracy, (int)FracAccuracy);
 
 	uint16_t act_int_accuracy = (uint16_t)((my_num_parts->IntPart).length() - (my_num_parts->IntPart).find_first_not_of('0'));
 
 	if (IntAccuracy < act_int_accuracy && (my_num_parts->IntPart).find_first_not_of('0') != (my_num_parts->IntPart).npos)
 	{
 		IntAccuracy = act_int_accuracy;
-		std::cout << "Warning: IntAccuracy has been increased up to " + std::to_string(act_int_accuracy) + " binary digits."
+		std::cout << "Warning[constructor]: IntAccuracy has been increased up to " + std::to_string(act_int_accuracy) + " binary digits."
 				  << std::endl;
 	}
 
-	MakeDeque(my_num_parts.get());
+	MakeDeque(my_num_parts);
 }
 
 LongNumber::LongNumber(const char *input = "0", uint16_t IntAcc = 32, uint16_t FracAcc = 64) : IntAccuracy(IntAcc),
@@ -77,18 +99,18 @@ LongNumber::LongNumber(const char *input = "0", uint16_t IntAcc = 32, uint16_t F
 		sign = -1;
 	}
 
-	std::unique_ptr<LongNumParts> my_num_parts = DecToBinary(str_num, (int)IntAccuracy, (int)FracAccuracy);
+	LongNumParts *my_num_parts = DecToBinary(str_num, (int)IntAccuracy, (int)FracAccuracy);
 
 	uint16_t act_int_accuracy = (uint16_t)((my_num_parts->IntPart).length() - (my_num_parts->IntPart).find_first_not_of('0'));
 
 	if (IntAccuracy < act_int_accuracy && (my_num_parts->IntPart).find_first_not_of('0') != (my_num_parts->IntPart).npos)
 	{
 		IntAccuracy = act_int_accuracy;
-		std::cout << "Warning: IntAccuracy has been increased up to " + std::to_string(act_int_accuracy) + " binary digits."
+		std::cout << "Warning[constructor]: IntAccuracy has been increased up to " + std::to_string(act_int_accuracy) + " binary digits."
 				  << std::endl;
 	}
 
-	MakeDeque(my_num_parts.get());
+	MakeDeque(my_num_parts);
 }
 
 LongNumber::LongNumber(const LongNumber &other) :
@@ -102,16 +124,17 @@ LongNumber::LongNumber(const LongNumber &other) :
 	num = new std::deque<unsigned long long>(*other.num);
 }
 
-LongNumber::LongNumber(LongNumber &&other) :
+LongNumber::LongNumber(LongNumber &&other) noexcept :
 
-											 IntAccuracy(other.IntAccuracy),
-											 FracAccuracy(other.FracAccuracy),
-											 IntAccuracy_increased(other.IntAccuracy_increased),
-											 FracAccuracy_increased(other.FracAccuracy_increased),
-											 sign(other.sign)
+													  IntAccuracy(other.IntAccuracy),
+													  FracAccuracy(other.FracAccuracy),
+													  IntAccuracy_increased(other.IntAccuracy_increased),
+													  FracAccuracy_increased(other.FracAccuracy_increased),
+													  sign(other.sign),
+													  num(other.num)
 {
-	num = other.num;
-	other.num = nullptr;
+	if (this != &other)
+		other.num = nullptr;
 }
 
 LongNumber::~LongNumber()
@@ -132,7 +155,6 @@ LongNumber &LongNumber::operator=(const LongNumber &other)
 	sign = other.sign;
 
 	num = new std::deque<unsigned long long>(*other.num);
-
 	return *this;
 }
 
@@ -150,7 +172,6 @@ LongNumber &LongNumber::operator=(LongNumber &&other)
 
 	num = other.num;
 	other.num = nullptr;
-
 	return *this;
 }
 
@@ -221,6 +242,35 @@ bool LongNumber::operator<(const LongNumber &other) const
 bool LongNumber::operator>(const LongNumber &other) const
 {
 	return *this != other && !(*this < other);
+}
+
+LongNumber LongNumber::operator+(const LongNumber &other) const
+{
+	uint16_t ResIntAcc = std::max(IntAccuracy, other.IntAccuracy);
+	uint16_t ResFracAcc = std::max(FracAccuracy, other.FracAccuracy);
+	uint16_t ResIntAcc_32 = std::max(IntAccuracy_increased, other.IntAccuracy_increased);
+	uint16_t ResFracAcc_32 = std::max(FracAccuracy_increased, other.FracAccuracy_increased);
+
+	LongNumber Res(ResIntAcc, ResFracAcc);
+
+	LongNumber temp1 = *this;
+	LongNumber temp2 = other;
+	temp1.NormalizeDigits(ResIntAcc_32, ResFracAcc_32);
+	temp2.NormalizeDigits(ResIntAcc_32, ResFracAcc_32);
+
+	if (sign == 1 && other.sign == 1)
+	{
+		SummarizeDeques(*Res.num, *temp1.num, *temp2.num);
+		Res.NormalizeAccuracy();
+		return Res;
+	}
+	if (sign == -1 && other.sign == -1){
+		Res.sign=-1;
+		SummarizeDeques(*Res.num, *temp1.num, *temp2.num);
+		Res.NormalizeAccuracy();
+		return Res;
+	}
+	return LongNumber(1, 1);
 }
 
 LongNumber operator""_longnum(const char *num)

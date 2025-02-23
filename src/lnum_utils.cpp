@@ -112,13 +112,34 @@ bool IsZeroDeq(const std::deque<unsigned long long> *DeqPtr)
 	return true;
 }
 
-std::unique_ptr<LongNumParts> DecToBinary(const std::string &dec, int bin_precision_int, int bin_precision_frac)
+void SummarizeDeques(std::deque<unsigned long long> &res,
+					 const std::deque<unsigned long long> &s1, const std::deque<unsigned long long> &s2)
+{
+	unsigned long long mask = ~0xFFFFFFFFull;
+	for (long long i = (long long)(res.size() - 1ull); i >= 0; i--)
+	{
+		res[i] += (s1[i] + s2[i]);
+
+		if ((res[i] & mask) != 0 && i != 0ull)
+			res[i - 1] += 1;
+			
+		if ((res[i] & mask) != 0 && i == 0ull){
+			res[i] = res[i] & 0xFFFFFFFFull;
+			res.push_front(1ull);
+			break;
+		}
+		
+		res[i] = res[i] & 0xFFFFFFFFull;
+	}
+}
+
+LongNumParts *DecToBinary(const std::string &dec, int bin_precision_int, int bin_precision_frac)
 {
 	size_t DotPos = dec.find('.');
 	std::string IntPart = DotPos != dec.npos ? dec.substr(0, DotPos) : dec;
 	std::string FracPart = DotPos != dec.npos ? dec.substr(DotPos + 1) : "0";
 
-	auto data = std::make_unique<LongNumParts>(LongNumParts());
+	LongNumParts *data = new LongNumParts;
 
 	data->IntPart = IntToBin(IntPart, bin_precision_int);
 	data->FracPart = FracToBin(FracPart, bin_precision_frac);
