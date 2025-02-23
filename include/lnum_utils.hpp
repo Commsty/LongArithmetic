@@ -13,6 +13,8 @@ struct LongNumParts{
     std::string FracPart;
 };
 
+bool IsZeroDeq(const std::deque<unsigned long long>* DeqPtr);
+
 std::unique_ptr<LongNumParts> DecToBinary(const std::string &dec, int bin_precision_int, int bin_precision_frac);
 
 std::string MakeString(const long double &a);

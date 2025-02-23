@@ -167,21 +167,7 @@ bool LongNumber::operator==(const LongNumber &other) const
 	temp1.NormalizeDigits(MaxInt, MaxFrac);
 	temp2.NormalizeDigits(MaxInt, MaxFrac);
 
-	bool IsZero1{true}, IsZero2{true};
-	for (auto it = temp1.num->begin(); it != temp1.num->end(); it++)
-		if (*it != 0ull)
-		{
-			IsZero1 = false;
-			break;
-		}
-	for (auto it = temp2.num->begin(); it != temp2.num->end(); it++)
-		if (*it != 0ull)
-		{
-			IsZero2 = false;
-			break;
-		}
-
-	if (IsZero1 && IsZero2)
+	if (IsZeroDeq(temp1.num) && IsZeroDeq(temp2.num))
 		return true;
 
 	return *temp1.num == *temp2.num && temp1.sign == temp2.sign;
