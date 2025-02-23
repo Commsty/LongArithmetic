@@ -173,6 +173,11 @@ bool LongNumber::operator==(const LongNumber &other) const
 	return *temp1.num == *temp2.num && temp1.sign == temp2.sign;
 }
 
+bool LongNumber::operator!=(const LongNumber &other) const
+{
+	return !this->operator==(other);
+}
+
 LongNumber operator""_longnum(const char *num)
 {
 	return LongNumber(num);
