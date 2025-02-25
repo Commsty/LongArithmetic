@@ -1,12 +1,12 @@
 CXX:=g++
 CXXFLAGS:= -Wall -Wextra -pedantic -std=c++17 -Wconversion -Wshadow -Wunused -Wuninitialized
-TARGET:=Longnum_lib_test
+TARGET:=Longnum
 SRC_DIR:=src
 BUILD_DIR:=build
 
-SRCS:=$(wildcard $(SRC_DIR)/*.cpp) ./test.cpp
+SRCS:=$(wildcard $(SRC_DIR)/*.cpp) ./main.cpp
 OBJS:=$(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(wildcard $(SRC_DIR)/*.cpp))
-OBJS+=$(patsubst ./%.cpp, $(BUILD_DIR)/%.o, ./test.cpp)
+OBJS+=$(patsubst ./%.cpp, $(BUILD_DIR)/%.o, ./main.cpp)
 
 .PHONY: all build debug_build run debug clean
 
@@ -19,7 +19,7 @@ build: $(BUILD_DIR)/$(TARGET)
 
 run: build
 	@echo "<Program launch>"
-	$(BUILD_DIR)/$(TARGET).exe
+	@$(BUILD_DIR)/$(TARGET).exe
 
 
 debug_build: clean

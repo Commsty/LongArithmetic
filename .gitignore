@@ -4,4 +4,4 @@
 *.o
 *.pdf
 /.vscode/
-test.cpp
+main.cpp
