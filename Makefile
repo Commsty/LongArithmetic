@@ -38,7 +38,11 @@ clean:
 
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+ifeq ($(OS),Windows_NT)
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+else
+	@if [ -d "$(BUILD_DIR)" ]; then rm -rf "$(BUILD_DIR)"; fi
+endif
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 
