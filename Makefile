@@ -6,9 +6,12 @@ TARGET_TEST:=tests
 SRC_DIR:=src
 BUILD_DIR:=build
 TEST_DIR:=testing
+LIB_DIR:=lib
 
 
 SRCS:=$(wildcard $(SRC_DIR)/*.cpp)
+
+OBJSlib:=$(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o, $(SRCS))
 
 OBJS:=$(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o, $(SRCS))
 OBJS+=$(patsubst ./%.cpp, $(BUILD_DIR)/%.o, ./main.cpp)
@@ -16,11 +19,12 @@ OBJS+=$(patsubst ./%.cpp, $(BUILD_DIR)/%.o, ./main.cpp)
 OBJStest:=$(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SRCS))
 OBJStest+=$(patsubst $(TEST_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(TEST_DIR)/test.cpp)
 
-.PHONY: all build debug_build run debug clean test
+.PHONY: all build debug_build run debug clean test lib
 
 
 all: build
 
+lib: $(LIB_DIR)/longnum.a
 
 build: $(BUILD_DIR)/$(TARGET)
 
@@ -46,10 +50,20 @@ clean:
 	@echo "<Cleaning>"
 ifeq ($(OS),Windows_NT)
 	@if exist $(BUILD_DIR) rmdir /s /q $(BUILD_DIR)
+	@if exist $(LIB_DIR) rmdir /s /q $(LIB_DIR)
 else
 	rm -rf $(BUILD_DIR)
+	rm -rf $(LIB_DIR)
 endif	
 
+
+$(LIB_DIR)/longnum.a: $(OBJSlib)
+ifeq ($(OS),Windows_NT)
+	@if not exist $(LIB_DIR) mkdir $(LIB_DIR)
+else
+	mkdir -p $(LIB_DIR)
+endif
+	ar rcs $@ $^
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 ifeq ($(OS),Windows_NT)

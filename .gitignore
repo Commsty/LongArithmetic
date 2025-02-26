@@ -5,3 +5,4 @@
 *.pdf
 /.vscode/
 main.cpp
+Dockerfile
