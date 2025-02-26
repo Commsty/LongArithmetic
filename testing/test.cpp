@@ -1,6 +1,6 @@
 #include "../include/Longnum.hpp"
-
 #include <iostream>
+
 
 bool testThatPlusWorks_IntMinimal()
 {
@@ -19,18 +19,18 @@ bool testThatPlusWorks_IntMinimal()
 bool testThatPlusWorks_BiggerInt()
 {
 	// given
-	LongNumber a = 573828298837389299_longnum;
-	LongNumber b = 66189299292919010000011188828_longnum;
+	LongNumber a = LongNumber("573828298837389299",100,1000);
+	LongNumber b = LongNumber("66189299292919010000011188828",100,1000);
 
 	// when
 	LongNumber res = a + b;
 
 	// then
-	LongNumber expected = 66189299293492838298848578127_longnum;
+	LongNumber expected = LongNumber("66189299293492838298848578127",100,1000);
 	return (expected == res);
 }
 
-bool testThatPlusWorks_FractionalBAse2N()
+bool testThatPlusWorks_FractionalBase2N()
 {
 	// given
 	LongNumber a = 16617722_longnum;
@@ -40,11 +40,11 @@ bool testThatPlusWorks_FractionalBAse2N()
 	LongNumber res = a + b;
 
 	// then
-	LongNumber expected = 1728.625_longnum;
+	LongNumber expected = 16624333.625_longnum;
 	return (expected == res);
 }
 
-bool testThatPlusWorks_FractionalBAseNot2N()
+bool testThatPlusWorks_FractionalBaseNot2N()
 {
 	// given
 	LongNumber a = 166217.1727_longnum;
@@ -75,14 +75,14 @@ bool testThatPlusWorks_NegativeInt()
 bool testThatPlusWorks_NegativeFractional()
 {
 	// given
-	LongNumber a = 16628182182.199292_longnum;
+	LongNumber a = LongNumber("16628182182.199292",50,1000);
 	LongNumber b = -66192991.1882982_longnum;
 
 	// when
 	LongNumber res = a + b;
 
 	// then
-	LongNumber expected = 16561989191.010994_longnum;
+	LongNumber expected = LongNumber("16561989191.010994",35,1000);
 	return ((expected - res) < 0.001_longnum);
 }
 
@@ -91,35 +91,50 @@ int main()
 //
 	if (testThatPlusWorks_IntMinimal())
 	{
-		std::cout << "IntMinimal " << "OK" << std::endl;
+		std::cout << "---IntMinimal--- " << "OK" << std::endl;
 	}
 	else{
-		std::cout << "IntMinimal " << "FAIL" << std::endl;
+		std::cout << "---IntMinimal--- " << "FAIL" << std::endl;
 	}
 //
 	if (testThatPlusWorks_BiggerInt())
 	{
-		std::cout << "BiggerInt " << "OK" << std::endl;
+		std::cout << "---BiggerInt--- " << "OK" << std::endl;
 	}
 	else{
-		std::cout << "BiggerInt " << "FAIL" << std::endl;
+		std::cout << "---BiggerInt--- " << "FAIL" << std::endl;
 	}
 //
-	if (testThatPlusWorks_FractionalBAse2N())
+	if (testThatPlusWorks_FractionalBase2N())
 	{
-		std::cout << "FractionalBAse2N " << "OK" << std::endl;
+		std::cout << "---FractionalBase2N--- " << "OK" << std::endl;
 	}
 	else{
-		std::cout << "FractionalBAse2N " << "FAIL" << std::endl;
+		std::cout << "---FractionalBase2N--- " << "FAIL" << std::endl;
 	}
 //
-	if (testThatPlusWorks_FractionalBAseNot2N())
+	if (testThatPlusWorks_FractionalBaseNot2N())
 	{
-		std::cout << "FractionalBAseNot2N " << "OK" << std::endl;
+		std::cout << "---FractionalBaseNot2N--- " << "OK" << std::endl;
 	}
 	else{
-		std::cout << "FractionalBAseNot2N " << "FAIL" << std::endl;
+		std::cout << "---FractionalBaseNot2N--- " << "FAIL" << std::endl;
 	}
 //
+	if(testThatPlusWorks_NegativeInt())
+	{
+		std::cout << "---NegativeInt--- " << "\tOK" << std::endl;
+	}
+	else{
+		std::cout << "---NegativeInt--- " << "FAIL" << std::endl;
+	}
+//
+	if(testThatPlusWorks_NegativeFractional())
+	{
+		std::cout << "---NegativeFractional--- " << "OK" << std::endl;
+	}
+	else{
+		std::cout << "---NegativeFractional--- " << "FAIL" << std::endl;
+	}
 	return 0;
 }
