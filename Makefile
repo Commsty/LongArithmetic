@@ -1,50 +1,32 @@
 CXX:=g++
-CXXFLAGS:= -Wall -Wextra -pedantic -std=c++17 -Wconversion -Wshadow -Wunused -Wuninitialized
-TARGET:=Longnum
-TARGET_TEST:=tests
+CXXFLAGS:= -Wall -Wextra -pedantic -std=c++17 -Wconversion -Wshadow -Wunused -Wuninitialized -g
+TARGET_MAIN:=main
+TARGET_TEST:=Tests
+TARGET_LIB:=liblongnum
 
 SRC_DIR:=src
 BUILD_DIR:=build
 TEST_DIR:=testing
 LIB_DIR:=lib
 
-
 SRCS:=$(wildcard $(SRC_DIR)/*.cpp)
-
-OBJSlib:=$(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o, $(SRCS))
-
 OBJS:=$(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o, $(SRCS))
-OBJS+=$(patsubst ./%.cpp, $(BUILD_DIR)/%.o, ./main.cpp)
 
-OBJStest:=$(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SRCS))
-OBJStest+=$(patsubst $(TEST_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(TEST_DIR)/test.cpp)
-
-.PHONY: all build debug_build run debug clean test lib
-
+.PHONY: all build test_build test run lib clean
 
 all: build
 
-lib: $(LIB_DIR)/longnum.a
+build: lib $(BUILD_DIR)/$(TARGET_MAIN)
 
-build: $(BUILD_DIR)/$(TARGET)
+test_build: lib $(TEST_DIR)/$(TARGET_TEST)
 
+test: test_build
+	./$(TEST_DIR)/$(TARGET_TEST)
 
 run: build
-	@echo "<Program launch>"
-	@$(BUILD_DIR)/$(TARGET).exe
+	./$(BUILD_DIR)/$(TARGET_MAIN)
 
-
-debug_build: CXXFLAGS+= -g
-debug_build: clean $(BUILD_DIR)/$(TARGET)
-
-
-debug: debug_build
-	@echo "<Start debugging>"
-	@gdb $(BUILD_DIR)/$(TARGET).exe
-
-
-test: clean $(BUILD_DIR)/$(TARGET_TEST)
-	$(BUILD_DIR)/$(TARGET_TEST).exe
+lib: $(LIB_DIR)/$(TARGET_LIB).a
 
 clean:
 	@echo "<Cleaning>"
@@ -54,16 +36,26 @@ ifeq ($(OS),Windows_NT)
 else
 	rm -rf $(BUILD_DIR)
 	rm -rf $(LIB_DIR)
-endif	
+endif
 
-
-$(LIB_DIR)/longnum.a: $(OBJSlib)
+$(LIB_DIR)/$(TARGET_LIB).a: $(OBJS)
 ifeq ($(OS),Windows_NT)
 	@if not exist $(LIB_DIR) mkdir $(LIB_DIR)
 else
 	mkdir -p $(LIB_DIR)
 endif
 	ar rcs $@ $^
+
+$(BUILD_DIR)/$(TARGET_MAIN): main.cpp
+ifeq ($(OS),Windows_NT)
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+else
+	mkdir -p $(BUILD_DIR)
+endif
+	$(CXX) $(CXXFLAGS) $< -o $@ -Iinclude -Llib -llongnum
+
+$(TEST_DIR)/$(TARGET_TEST): $(TEST_DIR)/test.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@ -Iinclude -Llib -llongnum
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 ifeq ($(OS),Windows_NT)
@@ -72,28 +64,3 @@ else
 	mkdir -p $(BUILD_DIR)
 endif
 	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-
-$(BUILD_DIR)/%.o: $(TEST_DIR)/%.cpp
-ifeq ($(OS),Windows_NT)
-	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
-else
-	mkdir -p $(BUILD_DIR)
-endif
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-
-$(BUILD_DIR)/%.o: %.cpp
-ifeq ($(OS),Windows_NT)
-	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
-else
-	mkdir -p $(BUILD_DIR)
-endif
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-
-$(BUILD_DIR)/$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
-
-$(BUILD_DIR)/$(TARGET_TEST): $(OBJStest)
-	$(CXX) $(CXXFLAGS) $^ -o $@
