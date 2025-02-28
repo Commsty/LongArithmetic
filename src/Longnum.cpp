@@ -287,14 +287,13 @@ LongNumber LongNumber::operator+(const LongNumber &other) const
 		Res.NormalizeAccuracy();
 		return Res;
 	}
-	if (sign == -1 && other.sign == -1)
+	else
 	{
 		Res.sign = -1;
 		SummarizeDeques(*Res.num, *temp1.num, *temp2.num);
 		Res.NormalizeAccuracy();
 		return Res;
 	}
-	return LongNumber(1, 1);
 }
 
 LongNumber LongNumber::operator-(const LongNumber &other) const
@@ -335,23 +334,19 @@ LongNumber LongNumber::operator-(const LongNumber &other) const
 			return Res;
 		}
 	}
-	if (sign == -1 && other.sign == -1)
+	if (*this > other)
 	{
-		if (*this > other)
-		{
-			SubstractDeques(*Res.num, *temp2.num, *temp1.num);
-			Res.NormalizeAccuracy();
-			return Res;
-		}
-		else
-		{
-			SubstractDeques(*Res.num, *temp1.num, *temp2.num);
-			Res.NormalizeAccuracy();
-			Res.sign = -1;
-			return Res;
-		}
+		SubstractDeques(*Res.num, *temp2.num, *temp1.num);
+		Res.NormalizeAccuracy();
+		return Res;
 	}
-	return LongNumber(1, 1);
+	else
+	{
+		SubstractDeques(*Res.num, *temp1.num, *temp2.num);
+		Res.NormalizeAccuracy();
+		Res.sign = -1;
+		return Res;
+	}
 }
 
 LongNumber operator""_longnum(const char *num)
