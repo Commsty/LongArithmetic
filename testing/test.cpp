@@ -86,6 +86,20 @@ namespace
 		return (abs(expected - res) < 0.000001_longnum);
 	}
 
+	bool testThatPlusWorks_LessFractionalBaseNot2N()
+	{
+		// given
+		LongNumber a = LongNumber("709.5489962225", 10, 1000);
+		LongNumber b = LongNumber("0.9789632788", 1, 1000);
+
+		// when
+		LongNumber res = a + b;
+
+		// then
+		LongNumber expected = LongNumber("710.5279595013", 10, 1000);
+		return (abs(res - expected) < 0.0000000001_longnum);
+	}
+
 	bool testThatPlusWorks_NegativeInt()
 	{
 		// given
@@ -170,6 +184,20 @@ namespace
 		return (abs(expected - res) < 0.00001_longnum);
 	}
 
+	bool testThatMinusWorks_LessFractionalBaseNot2N()
+	{
+		// given
+		LongNumber a = LongNumber("709.5489962225", 10, 1000);
+		LongNumber b = LongNumber("0.9789632788", 1, 1000);
+
+		// when
+		LongNumber res = a - b;
+
+		// then
+		LongNumber expected = LongNumber("708.5700329437", 10, 1000);
+		return (abs(res - expected) < 0.0000000001_longnum);
+	}
+
 	bool testThatMinusWorks_NegativeInt()
 	{
 		// given
@@ -196,6 +224,76 @@ namespace
 		// then
 		LongNumber expected = -16465554.2807_longnum;
 		return (abs(expected - res) < 0.00000000001_longnum);
+	}
+
+	bool testThatMultipleWorks_IntMinimal()
+	{
+		// given
+		LongNumber a = 1727_longnum;
+		LongNumber b = -188282_longnum;
+
+		// when
+		LongNumber res = a * b;
+
+		// then
+		LongNumber expected = -325163014_longnum;
+		return (expected == res);
+	}
+
+	bool testThatMultipleWorks_BiggerInt()
+	{
+		// given
+		LongNumber a = LongNumber("172718288282", 100, 1);
+		LongNumber b = LongNumber("-188281882828291912", 100, 1);
+
+		// when
+		LongNumber res = a * b;
+
+		// then
+		LongNumber expected = LongNumber("-32519724516614667962464975184", 100, 1);
+		return (expected == res);
+	}
+
+	bool testThatMultipleWorks_FractionalBase2N()
+	{
+		// given
+		LongNumber a = LongNumber("178218818828281.25", 100, 100);
+		LongNumber b = LongNumber("4818181", 100, 1);
+
+		// when
+		LongNumber res = a * b;
+
+		// then
+		LongNumber expected = LongNumber("858690526720866981406.25", 100, 100);
+		return (expected == res);
+	}
+
+	bool testThatMultipleWorks_FractionalBaseNot2N()
+	{
+		// given
+		LongNumber a = LongNumber("178.2518821928", 20, 1000);
+		LongNumber b = LongNumber("491.1882813664", 20, 1000);
+
+		// when
+		LongNumber res = a * b;
+
+		// then
+		LongNumber expected = LongNumber("87555.235664607", 100, 1000);
+		return (abs(res - expected) < 0.000000001_longnum);
+	}
+
+	bool testThatMultipleWorks_LessFractionalBaseNot2N()
+	{
+		// given
+		LongNumber a = LongNumber("709.5489962225", 10, 1000);
+		LongNumber b = LongNumber("0.9789632788", 1, 1000);
+
+		// when
+		LongNumber res = a * b;
+
+		// then
+		LongNumber expected = LongNumber("694.6224118112", 10, 1000);
+		return (abs(res - expected) < 0.0000000001_longnum);
 	}
 }
 
@@ -237,6 +335,15 @@ int main()
 	else
 	{
 		MyTests.push_back({"testThatPlusWorks_FractionalBaseNot2N", false});
+	}
+	//
+	if (testThatPlusWorks_LessFractionalBaseNot2N())
+	{
+		MyTests.push_back({"testThatPlusWorks_LessFractionalBaseNot2N", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatPlusWorks_LessFractionalBaseNot2N", false});
 	}
 	//
 	if (testThatPlusWorks_NegativeInt())
@@ -293,6 +400,15 @@ int main()
 		MyTests.push_back({"testThatMinusWorks_FractionalBaseNot2N", false});
 	}
 	//
+	if (testThatMinusWorks_LessFractionalBaseNot2N())
+	{
+		MyTests.push_back({"testThatMinusWorks_LessFractionalBaseNot2N", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatMinusWorks_LessFractionalBaseNot2N", false});
+	}
+	//
 	if (testThatMinusWorks_NegativeInt())
 	{
 		MyTests.push_back({"testThatMinusWorks_NegativeInt", true});
@@ -311,7 +427,52 @@ int main()
 		MyTests.push_back({"testThatMinusWorks_NegativeFractional", false});
 	}
 	//
-	
+	if (testThatMultipleWorks_IntMinimal())
+	{
+		MyTests.push_back({"testThatMultipleWorks_IntMinimal", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatMultipleWorks_IntMinimal", false});
+	}
+	//
+	if (testThatMultipleWorks_BiggerInt())
+	{
+		MyTests.push_back({"testThatMultipleWorks_BiggerInt", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatMultipleWorks_BiggerInt", false});
+	}
+	//
+	if (testThatMultipleWorks_FractionalBase2N())
+	{
+		MyTests.push_back({"testThatMultipleWorks_FractionalBase2N", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatMultipleWorks_FractionalBase2N", false});
+	}
+	//
+	if (testThatMultipleWorks_FractionalBaseNot2N())
+	{
+		MyTests.push_back({"testThatMultipleWorks_FractionalBaseNot2N", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatMultipleWorks_FractionalBaseNot2N", false});
+	}
+	//
+	if (testThatMultipleWorks_LessFractionalBaseNot2N())
+	{
+		MyTests.push_back({"testThatMultipleWorks_LessFractionalBaseNot2N", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatMultipleWorks_LessFractionalBaseNot2N", false});
+	}
+	//
+
 	PrintResults(MyTests);
 	return 0;
 }
