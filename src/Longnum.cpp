@@ -72,7 +72,7 @@ LongNumber::LongNumber() : IntAccuracy(32),
 }
 
 LongNumber::LongNumber(long double d) : IntAccuracy(32),
-						   FracAccuracy(64)
+										FracAccuracy(64)
 {
 	const std::string str_num = MakeString(d);
 	LongNumParts *my_num_parts = DecToBinary(str_num, (int)IntAccuracy, (int)FracAccuracy);
@@ -107,8 +107,8 @@ LongNumber::LongNumber(uint16_t IntAcc, uint16_t FracAcc) : IntAccuracy(IntAcc),
 	MakeDeque(my_num_parts);
 }
 
-LongNumber::LongNumber(const char *input = "0", uint16_t IntAcc = 32, uint16_t FracAcc = 64) : IntAccuracy(IntAcc),
-																							   FracAccuracy(FracAcc)
+LongNumber::LongNumber(const char *input, uint16_t IntAcc = 32, uint16_t FracAcc = 64) : IntAccuracy(IntAcc),
+																						 FracAccuracy(FracAcc)
 {
 	std::string str_num = std::string(input);
 	if (input[0] == '-')
@@ -243,12 +243,12 @@ bool LongNumber::operator<(const LongNumber &other) const
 	bool Absolute{false};
 	for (size_t i = 0; i < temp1.num->size(); i++)
 	{
-		if (temp1.num[i] < temp2.num[i])
+		if ((*temp1.num)[i] < (*temp2.num)[i])
 		{
 			Absolute = true;
 			break;
 		}
-		if (temp1.num[i] > temp2.num[i])
+		if ((*temp1.num)[i] > (*temp2.num)[i])
 			break;
 	}
 
@@ -349,6 +349,46 @@ LongNumber LongNumber::operator-(const LongNumber &other) const
 	}
 }
 
+LongNumber LongNumber::operator*(const LongNumber &other) const
+{
+	LongNumber Res("0", 1, 0);
+	Res.sign = other.sign * sign;
+
+	MultiplyDeques(*Res.num, *num, *other.num);
+
+	uint16_t ResFracAcc_32 = other.FracAccuracy_increased + FracAccuracy_increased;
+	while (ResFracAcc_32 > std::max(other.FracAccuracy_increased, FracAccuracy_increased))
+	{
+		ResFracAcc_32--;
+		Res.num->pop_back();
+	}
+	Res.FracAccuracy_increased = ResFracAcc_32;
+	Res.FracAccuracy = std::max(FracAccuracy, other.FracAccuracy);
+
+	uint16_t ResIntAcc_32 = (uint16_t)Res.num->size() - ResFracAcc_32;
+	while (ResIntAcc_32 > std::max(other.IntAccuracy_increased, IntAccuracy_increased) &&
+		   Res.num->front() == 0ull)
+	{
+		Res.num->pop_front();
+		ResIntAcc_32--;
+	}
+
+	Res.IntAccuracy_increased = ResIntAcc_32;
+	if (Res.num->front() == 0)
+		Res.IntAccuracy = std::max(other.IntAccuracy, IntAccuracy);
+	else
+	{
+		unsigned new_acc = (Res.IntAccuracy_increased - 1) * 32u;
+		new_acc += static_cast<unsigned>(64 - __builtin_clzll(Res.num->front()));
+		Res.IntAccuracy = static_cast<uint16_t>(new_acc);
+	}
+
+	if (Res.IntAccuracy > std::max(other.IntAccuracy, IntAccuracy))
+		std::cout << "Warning: IntAccuracy has been increased up to " << std::to_string(Res.IntAccuracy) << " binary digits.\n";
+
+	return Res;
+}
+
 LongNumber operator""_longnum(const char *num)
 {
 	return LongNumber(num);
@@ -357,4 +397,11 @@ LongNumber operator""_longnum(const char *num)
 LongNumber operator""_longnum(long double d)
 {
 	return LongNumber(d);
+}
+
+LongNumber abs(const LongNumber &num)
+{
+	if (num < 0_longnum)
+		return -num;
+	return num;
 }

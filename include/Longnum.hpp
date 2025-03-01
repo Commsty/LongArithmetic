@@ -40,9 +40,12 @@ public:
 
 	LongNumber operator+(const LongNumber& other) const;
 	LongNumber operator-(const LongNumber& other) const;
+	LongNumber operator*(const LongNumber& other) const;
 };
 
 LongNumber operator""_longnum(const char *num);
 LongNumber operator""_longnum(long double d);
+
+LongNumber abs(const LongNumber& num);
 
 #endif

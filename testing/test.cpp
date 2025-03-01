@@ -83,7 +83,7 @@ namespace
 
 		// then
 		LongNumber expected = 828146.7977_longnum;
-		return ((expected - res) < 0.001_longnum);
+		return (abs(expected - res) < 0.000001_longnum);
 	}
 
 	bool testThatPlusWorks_NegativeInt()
@@ -97,7 +97,7 @@ namespace
 
 		// then
 		LongNumber expected = 49564809_longnum;
-		return ((expected - res) < 0.001_longnum);
+		return (abs(expected - res) < 0.000001_longnum);
 	}
 
 	bool testThatPlusWorks_NegativeFractional()
@@ -111,7 +111,7 @@ namespace
 
 		// then
 		LongNumber expected = LongNumber("16561989191.010994", 35, 1000);
-		return ((expected - res) < 0.001_longnum);
+		return (abs(expected - res) < 0.000001_longnum);
 	}
 
 	bool testThatMinusWorks_IntMinimal()
@@ -167,7 +167,7 @@ namespace
 
 		// then
 		LongNumber expected = -1_longnum;
-		return ((expected - res) < 0.00001_longnum);
+		return (abs(expected - res) < 0.00001_longnum);
 	}
 
 	bool testThatMinusWorks_NegativeInt()
@@ -195,7 +195,7 @@ namespace
 
 		// then
 		LongNumber expected = -16465554.2807_longnum;
-		return ((expected - res) < 0.00001_longnum);
+		return (abs(expected - res) < 0.00000000001_longnum);
 	}
 }
 

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
+#include<limits>
 
 namespace
 {
@@ -158,6 +159,34 @@ void SubstractDeques(std::deque<unsigned long long> &res,
 	}
 }
 
+void MultiplyDeques(std::deque<unsigned long long> &res,
+					const std::deque<unsigned long long> &s1, const std::deque<unsigned long long> &s2)
+{
+	res.resize(s2.size() + s1.size());
+	long long down_numpos = s2.size() - 1, upper_numpos;
+	long long shift = 0;
+	unsigned long long mask = ~0xFFFFFFFFull;
+	while (down_numpos >= 0)
+	{
+		upper_numpos = s1.size() - 1;
+		unsigned long long multiplier = s2[down_numpos--];
+		long long write_pos = res.size() - 1 - shift;
+		while (upper_numpos >= 0)
+		{
+			res[write_pos] += (multiplier * s1[upper_numpos--]);
+			size_t carry = write_pos;
+			while ((res[carry] & mask) != 0)
+			{
+				res[carry - 1] += (res[carry] / (0x100000000ull));
+				res[carry] %= (0x100000000ull);
+				carry--;
+			}
+			write_pos--;
+		}
+		shift++;
+	}
+}
+
 LongNumParts *DecToBinary(const std::string &dec, int bin_precision_int, int bin_precision_frac)
 {
 	size_t DotPos = dec.find('.');
@@ -175,7 +204,7 @@ LongNumParts *DecToBinary(const std::string &dec, int bin_precision_int, int bin
 std::string MakeString(const long double &a)
 {
 	std::ostringstream lf_stream;
-	lf_stream << std::setprecision(15) << a;
+	lf_stream << std::fixed << std::setprecision(std::numeric_limits<long double>::digits10) << a;
 	return lf_stream.str();
 }
 
