@@ -295,6 +295,76 @@ namespace
 		LongNumber expected = LongNumber("694.6224118112", 10, 1000);
 		return (abs(res - expected) < 0.0000000001_longnum);
 	}
+
+	bool testThatDivideWorks_IntMinimal()
+	{
+		// given
+		LongNumber a = 1992928_longnum;
+		LongNumber b = 784_longnum;
+
+		// when
+		LongNumber res = a / b;
+
+		// then
+		LongNumber expected = 2542_longnum;
+		return (expected == res);
+	}
+
+	bool testThatDivideWorks_BiggerInt()
+	{
+		// given
+		LongNumber a = LongNumber("182873883421990",100,1000);
+		LongNumber b = 1030_longnum;
+
+		// when
+		LongNumber res = a / b;
+
+		// then
+		LongNumber expected = LongNumber("177547459633",100,1000);
+		return (expected == res);
+	}
+
+	bool testThatDivideWorks_FractionalFirst()
+	{
+		// given
+		LongNumber a = LongNumber("181892892911772.781882", 100, 1000);
+		LongNumber b = LongNumber("178738.1881382", 100, 1000);
+
+		// when
+		LongNumber res = a / b;
+
+		// then
+		LongNumber expected = LongNumber("1017649864.34311156", 100, 1000);
+		return (abs(res - expected) < 0.00000001_longnum);
+	}
+
+	bool testThatDivideWorks_FractionalSecond()
+	{
+		// given
+		LongNumber a = LongNumber("181892892911772.781882", 100, 1000);
+		LongNumber b = LongNumber("0.000002", 100, 1000);
+
+		// when
+		LongNumber res = a / b;
+
+		// then
+		LongNumber expected = LongNumber("90946446455886390941", 100, 1000);
+		return (abs(res - expected) < 0.00000001_longnum);
+	}
+
+	bool testThatDivideWorks_FractionalThird()//check
+	{
+		// given
+		LongNumber a = LongNumber("5.1626727717211828", 10, 3000);
+		LongNumber b = LongNumber("3.177278838383", 10, 3000);
+
+		// when
+		LongNumber res = a / b;
+
+		// then
+		LongNumber expected = LongNumber("1.6248724252192487806", 10, 3000);
+		return (abs(res - expected) < LongNumber("0.0000000000000000001",1,3000));
+	}
 }
 
 int main()
@@ -470,6 +540,51 @@ int main()
 	else
 	{
 		MyTests.push_back({"testThatMultipleWorks_LessFractionalBaseNot2N", false});
+	}
+	//
+	if (testThatDivideWorks_IntMinimal())
+	{
+		MyTests.push_back({"testThatDivideWorks_IntMinimal", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatDivideWorks_IntMinimal", false});
+	}
+	//
+	if (testThatDivideWorks_BiggerInt())
+	{
+		MyTests.push_back({"testThatDivideWorks_BiggerInt", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatDivideWorks_BiggerInt", false});
+	}
+	//
+	if (testThatDivideWorks_FractionalFirst())
+	{
+		MyTests.push_back({"testThatDivideWorks_FractionalFirst", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatDivideWorks_FractionalFirst", false});
+	}
+	//
+	if (testThatDivideWorks_FractionalSecond())
+	{
+		MyTests.push_back({"testThatDivideWorks_FractionalSecond", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatDivideWorks_FractionalSecond", false});
+	}
+	//
+	if (testThatDivideWorks_FractionalThird())
+	{
+		MyTests.push_back({"testThatDivideWorks_FractionalThird", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatDivideWorks_FractionalThird", false});
 	}
 	//
 
