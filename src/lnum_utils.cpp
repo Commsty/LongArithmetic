@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
-#include<limits>
+#include <limits>
 
 namespace
 {
@@ -151,7 +151,7 @@ void SubstractDeques(std::deque<unsigned long long> &res,
 			s1[j++]--;
 			while (j != i)
 				s1[j++] += 0xFFFFFFFF;
-			s1[j] += 0xFFFFFFFF+1ull;
+			s1[j] += 0x100000000ull;
 			diff = s1[i] - s2[i];
 		}
 		res[i] = diff;

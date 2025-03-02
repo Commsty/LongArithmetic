@@ -296,6 +296,20 @@ namespace
 		return (abs(res - expected) < 0.0000000001_longnum);
 	}
 
+	bool testThatMultipleWorks_ZeroTest()
+	{
+		// given
+		LongNumber a = LongNumber("0", 10, 1000);
+		LongNumber b = LongNumber("10", 10, 10);
+
+		// when
+		LongNumber res = a * b;
+
+		// then
+		LongNumber expected = 0_longnum;
+		return (res == expected);
+	}
+
 	bool testThatDivideWorks_IntMinimal()
 	{
 		// given
@@ -313,14 +327,14 @@ namespace
 	bool testThatDivideWorks_BiggerInt()
 	{
 		// given
-		LongNumber a = LongNumber("182873883421990",100,1000);
+		LongNumber a = LongNumber("182873883421990", 100, 1000);
 		LongNumber b = 1030_longnum;
 
 		// when
 		LongNumber res = a / b;
 
 		// then
-		LongNumber expected = LongNumber("177547459633",100,1000);
+		LongNumber expected = LongNumber("177547459633", 100, 1000);
 		return (expected == res);
 	}
 
@@ -352,18 +366,52 @@ namespace
 		return (abs(res - expected) < 0.00000001_longnum);
 	}
 
-	bool testThatDivideWorks_FractionalThird()//check
+	bool testThatDivideWorks_FractionalThird()
 	{
 		// given
-		LongNumber a = LongNumber("5.1626727717211828", 10, 3000);
-		LongNumber b = LongNumber("3.177278838383", 10, 3000);
+		LongNumber a = LongNumber("5.1626727717211828", 10, 1000);
+		LongNumber b = LongNumber("3.177278838383", 10, 1000);
 
 		// when
 		LongNumber res = a / b;
 
 		// then
-		LongNumber expected = LongNumber("1.6248724252192487806", 10, 3000);
-		return (abs(res - expected) < LongNumber("0.0000000000000000001",1,3000));
+		LongNumber expected = LongNumber("1.624872425219248780689177811782613", 10, 1000);
+		return (abs(res - expected) < LongNumber("0.0000000000000000001", 1, 1000));
+	}
+
+	bool testThatDivideWorks_ZeroTestFirst()
+	{
+		// given
+		LongNumber a = LongNumber("-5.1626727717211828", 10, 1000);
+		LongNumber b = LongNumber("0", 10, 10);
+
+		// when
+		try
+		{
+			LongNumber res = a / b;
+		}
+
+		// then
+		catch (const DivisionByZeroError &e)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	bool testThatDivideWorks_ZeroTestSecond()
+	{
+		// given
+		LongNumber a = LongNumber("0", 10, 1000);
+		LongNumber b = LongNumber("10", 10, 10);
+
+		// when
+		LongNumber res = a / b;
+
+		// then
+		LongNumber expected = 0_longnum;
+		return (res == expected);
 	}
 }
 
@@ -542,6 +590,15 @@ int main()
 		MyTests.push_back({"testThatMultipleWorks_LessFractionalBaseNot2N", false});
 	}
 	//
+	if (testThatMultipleWorks_ZeroTest())
+	{
+		MyTests.push_back({"testThatMultipleWorks_ZeroTest", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatMultipleWorks_ZeroTest", false});
+	}
+	//
 	if (testThatDivideWorks_IntMinimal())
 	{
 		MyTests.push_back({"testThatDivideWorks_IntMinimal", true});
@@ -587,6 +644,23 @@ int main()
 		MyTests.push_back({"testThatDivideWorks_FractionalThird", false});
 	}
 	//
+	if (testThatDivideWorks_ZeroTestFirst())
+	{
+		MyTests.push_back({"testThatDivideWorks_ZeroTestFirst", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatDivideWorks_ZeroTestFirst", false});
+	}
+	//
+	if (testThatDivideWorks_ZeroTestSecond())
+	{
+		MyTests.push_back({"testThatDivideWorks_ZeroTestSecond", true});
+	}
+	else
+	{
+		MyTests.push_back({"testThatDivideWorks_ZeroTestSecond", false});
+	}
 
 	PrintResults(MyTests);
 	return 0;
