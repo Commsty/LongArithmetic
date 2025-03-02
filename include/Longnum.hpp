@@ -37,15 +37,24 @@ public:
 	bool operator!=(const LongNumber &other) const;
 	bool operator<(const LongNumber &other) const;
 	bool operator>(const LongNumber &other) const;
+	bool operator>=(const LongNumber &other) const;
+	bool operator<=(const LongNumber &other) const;
 
 	LongNumber operator+(const LongNumber& other) const;
 	LongNumber operator-(const LongNumber& other) const;
 	LongNumber operator*(const LongNumber& other) const;
+	LongNumber operator/(const LongNumber& other) const;
 };
 
 LongNumber operator""_longnum(const char *num);
 LongNumber operator""_longnum(long double d);
 
 LongNumber abs(const LongNumber& num);
+
+class DivisionByZeroError: public std::exception
+{
+public:
+	const char* what()const noexcept;
+};
 
 #endif

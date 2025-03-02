@@ -3,6 +3,11 @@
 
 #include <iostream>
 
+const char *DivisionByZeroError::what() const noexcept
+{
+	return "Division by zero is not allowed!";
+}
+
 void LongNumber::MakeDeque(void *ptr)
 {
 	auto parts = static_cast<LongNumParts *>(ptr);
@@ -262,6 +267,16 @@ bool LongNumber::operator>(const LongNumber &other) const
 	return *this != other && !(*this < other);
 }
 
+bool LongNumber::operator>=(const LongNumber &other) const
+{
+	return *this == other || *this > other;
+}
+
+bool LongNumber::operator<=(const LongNumber &other) const
+{
+	return *this == other || *this < other;
+}
+
 LongNumber LongNumber::operator+(const LongNumber &other) const
 {
 	if (sign == 1 && other.sign == -1)
@@ -387,6 +402,116 @@ LongNumber LongNumber::operator*(const LongNumber &other) const
 		std::cout << "Warning: IntAccuracy has been increased up to " << std::to_string(Res.IntAccuracy) << " binary digits.\n";
 
 	return Res;
+}
+
+LongNumber LongNumber::operator/(const LongNumber &other) const
+{
+	if (IsZeroDeq(other.num))
+		throw DivisionByZeroError();
+
+	uint16_t TotalFracAcc = std::max(other.FracAccuracy_increased, FracAccuracy_increased);
+	uint16_t ToAddDividend = TotalFracAcc - FracAccuracy_increased;
+	uint16_t ToAddDivider = TotalFracAcc - other.FracAccuracy_increased;
+
+	LongNumber dividend = abs(*this);
+	LongNumber divider = abs(other);
+
+	dividend.num->insert(dividend.num->end(), ToAddDividend, 0ull);
+	divider.num->insert(divider.num->end(), ToAddDivider, 0ull);
+
+	while (dividend.num->front() == 0ull)
+		dividend.num->pop_front();
+	while (divider.num->front() == 0ull)
+		divider.num->pop_front();
+
+	dividend.IntAccuracy_increased = (uint16_t)dividend.num->size();
+	divider.IntAccuracy_increased = (uint16_t)divider.num->size();
+
+	dividend.IntAccuracy = (uint16_t)dividend.IntAccuracy_increased * 32u;
+	divider.IntAccuracy = (uint16_t)divider.IntAccuracy_increased * 32u;
+
+	dividend.FracAccuracy_increased = divider.FracAccuracy_increased = 0;
+	dividend.FracAccuracy = divider.FracAccuracy = 0;
+
+	LongNumber res, multiplied, newDividend;
+	int res_size = static_cast<int>(dividend.IntAccuracy_increased) - static_cast<int>(divider.IntAccuracy_increased) + 1;
+
+	res_size >= 1 ? res.num->resize(res_size) : res.num->resize(1);
+	int bitToCheck = res_size * 32 - 1;
+	while (dividend >= divider && bitToCheck >= 0)
+	{
+		multiplied = divider;
+		shift_deque(*multiplied.num, bitToCheck);
+		multiplied.IntAccuracy_increased = (uint16_t)multiplied.num->size();
+		multiplied.IntAccuracy = (uint16_t)(multiplied.IntAccuracy_increased * 32u);
+
+		newDividend = dividend - multiplied;
+
+		if (newDividend >= 0_longnum)
+		{
+			dividend = newDividend;
+			(*res.num)[res_size - bitToCheck / 32 - 1] |= (1ull << bitToCheck % 32);
+		}
+		bitToCheck--;
+	}
+	while (res.num->front() == 0ull && res.num->size() > 1)
+		res.num->pop_front();
+	while (res.num->size() < std::max(IntAccuracy_increased, other.IntAccuracy_increased))
+		res.num->push_front(0ull);
+	res.IntAccuracy_increased = (uint16_t)res.num->size();
+
+	if (res.num->front() == 0)
+		res.IntAccuracy = std::max(other.IntAccuracy, IntAccuracy);
+	else
+	{
+		unsigned new_acc = (res.IntAccuracy_increased - 1) * 32u;
+		new_acc += static_cast<unsigned>(64 - __builtin_clzll(res.num->front()));
+		res.IntAccuracy = static_cast<uint16_t>(new_acc);
+	}
+
+	if (res.IntAccuracy > std::max(IntAccuracy, other.IntAccuracy))
+		std::cout << "Warning: IntAccuracy has been increased up to " << std::to_string(res.IntAccuracy) << " binary digits.\n";
+
+	int resFracAcc_32 = static_cast<int>(std::max(FracAccuracy_increased, other.FracAccuracy_increased));
+
+	while (resFracAcc_32-- > 0)
+	{
+		dividend.num->push_back(0ull);
+		dividend.IntAccuracy_increased++;
+		dividend.IntAccuracy += 32;
+
+		if (dividend < divider)
+		{
+			res.num->push_back(0ull);
+			continue;
+		}
+		else
+		{
+			bitToCheck = 31;
+			unsigned long long resBlock = 0ull;
+			while (dividend >= divider && bitToCheck >= 0)
+			{
+				multiplied = divider;
+				shift_deque(*multiplied.num, bitToCheck);
+				multiplied.IntAccuracy_increased = (uint16_t)multiplied.num->size();
+				multiplied.IntAccuracy = (uint16_t)(multiplied.IntAccuracy_increased * 32u);
+
+				newDividend = dividend - multiplied;
+
+				if (newDividend >= 0_longnum)
+				{
+					dividend = newDividend;
+					resBlock |= (1ull << bitToCheck % 32);
+				}
+				bitToCheck--;
+			}
+			res.num->push_back(resBlock);
+		}
+	}
+	res.FracAccuracy_increased = std::max(FracAccuracy_increased, other.FracAccuracy_increased);
+	res.FracAccuracy = (uint16_t)res.FracAccuracy_increased * 32u;
+	res.sign = sign * other.sign;
+	return res;
 }
 
 LongNumber operator""_longnum(const char *num)

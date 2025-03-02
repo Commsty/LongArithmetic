@@ -187,6 +187,23 @@ void MultiplyDeques(std::deque<unsigned long long> &res,
 	}
 }
 
+void shift_deque(std::deque<unsigned long long> &shifted_deq, int bits)
+{
+	shifted_deq.insert(shifted_deq.end(), bits / 32u, 0ull);
+
+	bits %= 32u;
+	unsigned long long mask = 0xFFFFFFFFull, carry = 0ull;
+	for (long long i = shifted_deq.size() - 1; i >= 0; i--)
+	{
+		shifted_deq[i] = (shifted_deq[i] << bits) | carry;
+		carry = shifted_deq[i] >> 32;
+		shifted_deq[i] &= mask;
+	}
+
+	if (carry != 0ull)
+		shifted_deq.push_front(carry);
+}
+
 LongNumParts *DecToBinary(const std::string &dec, int bin_precision_int, int bin_precision_frac)
 {
 	size_t DotPos = dec.find('.');
