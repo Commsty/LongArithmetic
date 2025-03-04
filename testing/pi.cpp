@@ -1,6 +1,37 @@
 #include "../include/Longnum.hpp"
 
 #include <iostream>
+#include <chrono>
+#include <ostream>
+
+class TimerGuard
+{
+	const std::chrono::time_point<std::chrono::high_resolution_clock> start;
+	const std::string name;
+	std::ostream &output;
+
+public:
+	TimerGuard() = delete;
+
+	TimerGuard(std::string process_name, std::ostream &stream = std::cout)
+		: 
+		  start(std::chrono::high_resolution_clock::now()),
+		  name(process_name),
+		  output(stream)
+
+	{
+	}
+
+	~TimerGuard()
+	{
+		const auto end = std::chrono::high_resolution_clock::now();
+		const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+								  end - start)
+								  .count();
+
+		output << name << " " << duration << "ms."<< std::endl;
+	}
+};
 
 const LongNumber c1("262537412640768000", 1000, 384);
 const LongNumber c2("512384047.99600074981255466992791529927985060803010899361005608614623126188949113059562159893746802321614885", 1000, 384);
@@ -22,6 +53,7 @@ LongNumber factorial(LongNumber a)
 
 int main()
 {
+	TimerGuard Pi = TimerGuard("Pi has been calculated.", std::cout);
 	LongNumber Opposite(1000, 384);
 	LongNumber upper(1000, 384), lower(1000, 384);
 
@@ -43,7 +75,7 @@ int main()
 
 	LongNumber pi = LongNumber(1, 10, 384) / (LongNumber(12, 10, 384) * Opposite);
 
-	// std::cout << pi.GetDecimal().substr(0, 102) << std::endl;
+	std::cout << pi.GetDecimal().substr(0, 102) << std::endl;
 
 	return 0;
 }

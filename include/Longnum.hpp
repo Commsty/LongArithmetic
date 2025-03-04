@@ -4,6 +4,7 @@
 
 #include <deque>
 #include <cinttypes>
+#include<string>
 
 class LongNumber
 {

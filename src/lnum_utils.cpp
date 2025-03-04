@@ -162,6 +162,14 @@ namespace
 			res.insert(res.begin(), 1, (char)overload + '0');
 		return res;
 	}
+
+	std::string GetBinary(unsigned long long num)
+	{
+		std::string res = "";
+		for (int i = 31; i >= 0; i--)
+			res.push_back(((num >> i) & 1ull) + '0');
+		return res;
+	}
 }
 
 bool IsZeroDeq(const std::deque<unsigned long long> *DeqPtr)
@@ -294,11 +302,11 @@ std::string Transfer(std::deque<unsigned long long> deq, unsigned IntNumber, uns
 	std::string frac = "5";
 	for (long long i = IntNumber; i < IntNumber + FracNumber; i++)
 	{
-		// std::string temp = GetBinary(deq[i]);
+		std::string temp = GetBinary(deq[i]);
 		for (int j = 0; j < 32; j++)
 		{
 			i > IntNumber || j > 0 ? frac = DivideByTwoFractional(frac) : frac = frac;
-			// if (temp[j] == '1')
+			if (temp[j] == '1')
 				resFrac = SummarizeStringsFractional(resFrac, frac);
 		}
 	}
