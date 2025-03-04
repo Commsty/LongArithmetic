@@ -103,6 +103,65 @@ namespace
 
 		return res;
 	}
+
+	std::string DivideByTwoFractional(const std::string &num)
+	{
+		int Overload = 0;
+		std::string res = "";
+		std::string cpy = num;
+		while (!cpy.empty())
+		{
+			int digit = (cpy.front() - '0') + Overload * 10;
+			res.push_back((char)(digit / 2) + '0');
+			Overload = digit % 2;
+			cpy.erase(0, 1);
+		}
+		if (Overload != 0)
+			res.push_back((char)(Overload * 5) + '0');
+		return res;
+	}
+
+	std::string SummarizeStringsFractional(std::string s1, std::string s2)
+	{
+		size_t AddZeroes = std::max(s1.size(), s2.size());
+		size_t ToAddS1 = AddZeroes - s1.size();
+		size_t ToAddS2 = AddZeroes - s2.size();
+
+		s1.append(ToAddS1, '0');
+		s2.append(ToAddS2, '0');
+		std::string res(s1.size(), '0');
+
+		int overload = 0;
+		for (long long i = (long long)s1.size() - 1; i >= 0; i--)
+		{
+			int digit = (s1[i] + s2[i] - 2 * '0') + overload;
+			res[i] = (char)(digit % 10) + '0';
+			overload = digit / 10;
+		}
+		return res;
+	}
+
+	std::string SummarizeStringsInteger(std::string s1, std::string s2)
+	{
+		size_t AddZeroes = std::max(s1.size(), s2.size());
+		size_t ToAddS1 = AddZeroes - s1.size();
+		size_t ToAddS2 = AddZeroes - s2.size();
+
+		s1.insert(s1.begin(), ToAddS1, '0');
+		s2.insert(s2.begin(), ToAddS2, '0');
+		std::string res(s1.size(), '0');
+
+		int overload = 0;
+		for (long long i = (long long)s1.size() - 1; i >= 0; i--)
+		{
+			int digit = (s1[i] + s2[i] - 2 * '0') + overload;
+			res[i] = (char)(digit % 10) + '0';
+			overload = digit / 10;
+		}
+		if (overload != 0)
+			res.insert(res.begin(), 1, (char)overload + '0');
+		return res;
+	}
 }
 
 bool IsZeroDeq(const std::deque<unsigned long long> *DeqPtr)
@@ -227,7 +286,7 @@ std::string Transfer(std::deque<unsigned long long> deq, unsigned IntNumber, uns
 		std::string temp = std::to_string(deq[i]);
 		for (int j = 0; j < power; j++)
 			temp = MultipleByTwo(temp);
-		// resInt = SummarizeStringsInteger(temp, resInt);
+		resInt = SummarizeStringsInteger(temp, resInt);
 		power += 32;
 	}
 
@@ -238,9 +297,9 @@ std::string Transfer(std::deque<unsigned long long> deq, unsigned IntNumber, uns
 		// std::string temp = GetBinary(deq[i]);
 		for (int j = 0; j < 32; j++)
 		{
-			// i > IntNumber || j > 0 ? frac = DivideByTwoFractional(frac) : frac = frac;
+			i > IntNumber || j > 0 ? frac = DivideByTwoFractional(frac) : frac = frac;
 			// if (temp[j] == '1')
-				// resFrac = SummarizeStringsFractional(resFrac, frac);
+				resFrac = SummarizeStringsFractional(resFrac, frac);
 		}
 	}
 	return resInt + '.' + resFrac;
