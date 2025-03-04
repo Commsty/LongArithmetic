@@ -533,6 +533,14 @@ LongNumber LongNumber::operator/(const LongNumber &other) const
 	return res;
 }
 
+std::string LongNumber::GetDecimal() const
+{
+	auto cpy_deq = *num;
+	if (sign == 1)
+		return Transfer(cpy_deq, IntAccuracy_increased, FracAccuracy_increased);
+	return "-" + Transfer(*num, IntAccuracy_increased, FracAccuracy_increased);
+}
+
 LongNumber operator""_longnum(const char *num)
 {
 	return LongNumber(num);

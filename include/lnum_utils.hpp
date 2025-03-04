@@ -24,6 +24,8 @@ void MultiplyDeques(std::deque<unsigned long long> &res,
 
 void shift_deque(std::deque<unsigned long long> &shifted_deq, int bits);
 
+std::string Transfer(std::deque<unsigned long long> deq, unsigned IntNumber, unsigned FracNumber);
+
 LongNumParts *DecToBinary(const std::string &dec, int bin_precision_int, int bin_precision_frac);
 
 std::string MakeString(const long double &a);

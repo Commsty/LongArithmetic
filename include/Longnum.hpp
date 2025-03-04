@@ -45,6 +45,8 @@ public:
 	LongNumber operator-(const LongNumber &other) const;
 	LongNumber operator*(const LongNumber &other) const;
 	LongNumber operator/(const LongNumber &other) const;
+
+	std::string GetDecimal() const;
 };
 
 LongNumber operator""_longnum(const char *num);

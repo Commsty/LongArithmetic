@@ -218,6 +218,35 @@ LongNumParts *DecToBinary(const std::string &dec, int bin_precision_int, int bin
 	return data;
 }
 
+std::string Transfer(std::deque<unsigned long long> deq, unsigned IntNumber, unsigned FracNumber)
+{
+	std::string resInt = "0";
+	int power = 0;
+	for (long long i = IntNumber - 1; i >= 0; i--)
+	{
+		std::string temp = std::to_string(deq[i]);
+		for (int j = 0; j < power; j++)
+			temp = MultipleByTwo(temp);
+		// resInt = SummarizeStringsInteger(temp, resInt);
+		power += 32;
+	}
+
+	std::string resFrac = "0";
+	std::string frac = "5";
+	for (long long i = IntNumber; i < IntNumber + FracNumber; i++)
+	{
+		// std::string temp = GetBinary(deq[i]);
+		for (int j = 0; j < 32; j++)
+		{
+			// i > IntNumber || j > 0 ? frac = DivideByTwoFractional(frac) : frac = frac;
+			// if (temp[j] == '1')
+				// resFrac = SummarizeStringsFractional(resFrac, frac);
+		}
+	}
+	return resInt + '.' + resFrac;
+}
+
+
 std::string MakeString(const long double &a)
 {
 	std::ostringstream lf_stream;
