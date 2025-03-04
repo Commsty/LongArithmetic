@@ -22,8 +22,9 @@ private:
 
 public:
 	LongNumber();
-	LongNumber(long double d);
 	LongNumber(uint16_t IntAcc, uint16_t FracAcc);
+	LongNumber(long double d);
+	LongNumber(long double d, uint16_t IntAcc, uint16_t FracAcc);
 	LongNumber(const char *input, uint16_t IntAcc, uint16_t FracAcc);
 	LongNumber(const LongNumber &other);
 	LongNumber(LongNumber &&other) noexcept;

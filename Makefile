@@ -2,6 +2,7 @@ CXX:=g++
 CXXFLAGS:= -Wall -Wextra -pedantic -std=c++17 -Wconversion -Wshadow -Wunused -Wuninitialized -g
 TARGET_TEST:=Tests
 TARGET_LIB:=liblongnum
+TARGET_PI:=pi
 
 SRC_DIR:=src
 BUILD_DIR:=build
@@ -11,7 +12,7 @@ LIB_DIR:=lib
 SRCS:=$(wildcard $(SRC_DIR)/*.cpp)
 OBJS:=$(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o, $(SRCS))
 
-.PHONY: all build test test_build lib clean
+.PHONY: all build test test_build pi pi_build lib clean
 
 all: build
 
@@ -21,6 +22,11 @@ test_build: lib $(BUILD_DIR)/$(TARGET_TEST)
 
 test: test_build
 	@./$(BUILD_DIR)/$(TARGET_TEST)
+
+pi_build: lib $(BUILD_DIR)/$(TARGET_PI)
+
+pi: pi_build
+	@./$(BUILD_DIR)/$(TARGET_PI)
 
 lib: $(LIB_DIR)/$(TARGET_LIB).a
 
@@ -43,6 +49,9 @@ endif
 	@ar rcs $@ $^
 
 $(BUILD_DIR)/$(TARGET_TEST): $(TEST_DIR)/test.cpp
+	@$(CXX) $(CXXFLAGS) $< -o $@ -Iinclude -Llib -llongnum
+
+$(BUILD_DIR)/$(TARGET_PI): $(TEST_DIR)/pi.cpp
 	@$(CXX) $(CXXFLAGS) $< -o $@ -Iinclude -Llib -llongnum
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp

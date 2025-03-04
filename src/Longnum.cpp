@@ -76,10 +76,29 @@ LongNumber::LongNumber() : IntAccuracy(32),
 	MakeDeque(my_num_parts);
 }
 
-LongNumber::LongNumber(long double d) : IntAccuracy(32),
+LongNumber::LongNumber(long double d) : IntAccuracy(64),
 										FracAccuracy(64)
 {
 	const std::string str_num = MakeString(d);
+	LongNumParts *my_num_parts = DecToBinary(str_num, (int)IntAccuracy, (int)FracAccuracy);
+
+	uint16_t act_int_accuracy = (uint16_t)((my_num_parts->IntPart).length() - (my_num_parts->IntPart).find_first_not_of('0'));
+
+	if (IntAccuracy < act_int_accuracy && (my_num_parts->IntPart).find_first_not_of('0') != (my_num_parts->IntPart).npos)
+	{
+		IntAccuracy = act_int_accuracy;
+		std::cout << "Warning[constructor]: IntAccuracy has been increased up to " + std::to_string(act_int_accuracy) + " binary digits."
+				  << std::endl;
+	}
+
+	MakeDeque(my_num_parts);
+}
+
+LongNumber::LongNumber(long double d, uint16_t IntAcc, uint16_t FracAcc) : IntAccuracy(IntAcc),
+																		   FracAccuracy(FracAcc)
+{
+	std::string str_num = MakeString(d);
+
 	LongNumParts *my_num_parts = DecToBinary(str_num, (int)IntAccuracy, (int)FracAccuracy);
 
 	uint16_t act_int_accuracy = (uint16_t)((my_num_parts->IntPart).length() - (my_num_parts->IntPart).find_first_not_of('0'));
@@ -521,7 +540,7 @@ LongNumber operator""_longnum(const char *num)
 
 LongNumber operator""_longnum(long double d)
 {
-	return LongNumber(d);
+	return LongNumber(d, 64, 64);
 }
 
 LongNumber abs(const LongNumber &num)
